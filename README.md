@@ -1,5 +1,10 @@
 tarballize
 ========
+Make tarballs of given git repository including its submodules.
+
+```sh
+docker run "-v${PWD}:/a" devsisters/tarballize https://github.com/devsisters/goquic v0.1
+```
 
 <br>
 
