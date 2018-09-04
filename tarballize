@@ -1,0 +1,39 @@
+#!/bin/sh
+set -eu
+
+# Parse commandline arguments
+if [ "$#" -ne 2 ]; then
+  cat <<EOF
+Usage: ${0} <repo> <tag or branch name>
+
+Make tarballs of given git repository including its submodules.
+
+Example:
+  ${0} https://github.com/devsisters/goquic v0.1
+EOF
+  exit 1
+fi
+REPO="${1}"
+TAG_NAME="${2}"
+
+# Create a temporary directory and register a signal handler
+TEMPDIR="$(mktemp -d)"
+trap 'rm -rf "${TEMPDIR}"' EXIT
+
+# Checkout source codes
+#
+# NOTE: You can parallelize the submodule update with '--jobs=8' parameter if
+# you are using Git 2.8+
+git clone --branch="${TAG_NAME}" --depth=1 --recursive "${REPO}" "${TEMPDIR}/${TAG_NAME}"
+
+# Remove redundant files from tarball
+rm -rf "${TEMPDIR}/${TAG_NAME}/.git"
+
+# Make various tarballs
+tar -cf "${TEMPDIR}/${TAG_NAME}.tar" -C "${TEMPDIR}/" "${TAG_NAME}"
+gzip  < "${TEMPDIR}/${TAG_NAME}".tar > "./${TAG_NAME}".tar.gz
+bzip2 < "${TEMPDIR}/${TAG_NAME}".tar > "./${TAG_NAME}".tar.bz2
+xz    < "${TEMPDIR}/${TAG_NAME}".tar > "./${TAG_NAME}".tar.xz
+
+# Remove the temporary directory
+rm -rf "${TEMPDIR}"
