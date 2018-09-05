@@ -2,8 +2,8 @@ tarballize [![Docker Stats]][Docker Hub]
 ========
 Make tarballs of given git repository including its submodules.
 
-```sh
-docker run "-v${PWD}:/a" devsisters/tarballize https://github.com/devsisters/goquic v0.1
+```bash
+docker run "-v${PWD}:/a" devsisters/tarballize https://github.com/devsisters/prometheus-cpp v0.4.2-hotfix
 ```
 
 <br>
